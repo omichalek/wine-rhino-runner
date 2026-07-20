@@ -1,0 +1,6 @@
+[submodule "wine-src"]
+	path = wine-src
+	url = https://github.com/wine-mirror/wine.git
+[submodule "patch"]
+	path = patch
+	url = https://github.com/ItHasLegs/rhino8-wine
