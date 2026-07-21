@@ -2,7 +2,7 @@ name: Patch and build Wine
 
 on:
   push:
-    branches: ["main" ]
+    branches: [ "main" ]
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -45,10 +45,10 @@ jobs:
           ../wine-src/configure --enable-archs=i386,x86_64 \
             --with-wayland --with-vulkan --with-x
           make -j$(nproc)
-          make install DESTDIR="/wine-runner-stage"
+          make install DESTDIR="$GITHUB_WORKSPACE/wine-runner-stage"
       - name: Upload compiled artifact
         uses: actions/upload-artifact@v4
         with:
           name: wine-rhino-runner
           # Extract the binaries
-          path: /wine-runner-stage/usr/local
+          path: wine-runner-stage/usr/local
