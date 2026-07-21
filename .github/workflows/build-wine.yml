@@ -1,0 +1,55 @@
+name: Patch and build Wine
+
+on:
+	push:
+		branches: [ "main" ]
+jobs:
+	build:
+		runs-on: ubuntu-24.04
+		steps:
+			- name: Checkout source, submodules
+				uses: actions/checkout@v4
+				with:
+					submodules: true
+			- name: Install dependencies
+				run: |
+					sudo dpkg --add-architecture i386
+					sudo apt-get update
+					# Install build dependencies
+					sudo apt-get install -y \
+						build-essential git autoconf bison flex \
+						python3 pkg-config \
+						gcc-mingw-w64 \
+						libx11-dev libxext-dev libxrandr-dev \
+						libxcomposite-dev libxcursor-dev \
+						libxi-dev libxinerama-dev libxrender-dev libxxf86vm-dev \
+						libxfixes-dev libxdamage-dev \
+						libfreetype-dev libfontconfig-dev \
+						libgnutls28-dev \
+						libgl-dev \
+						libvulkan-dev \
+						libwayland-dev libxkbregistry-dev \
+						libpulse-dev \
+						libcups2-dev libpcap-dev libsdl2-dev libv4l-dev \
+						ocl-icd-opencl-dev libpcsclite-dev unixodbc-dev \
+						libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
+						libssl-dev
+			- name: Apply the patch by ItHasLegs
+				run: |
+					cd wine-src
+					git apply ../patch/rhino8-wine.patch
+			- name: Compile
+				run: |
+					mkdir wine-build
+					cd wine-build
+					../wine-src/configure --enable-archs=i386,x86_64 \
+						--with-wayland --with-vulkan --with-x
+					./configure
+					make -j$(nproc)
+					make install DESTDIR="/wine-runner-stage"
+			- name: Upload compiled artifact
+				uses: actions/upload-artifact@v4
+				with: |
+					name: wine-rhino-runner
+					# Extract the binaries
+					path: /wine-runner-stage/usr/local
