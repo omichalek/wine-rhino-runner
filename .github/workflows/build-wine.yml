@@ -44,7 +44,6 @@ jobs:
           cd wine-build
           ../wine-src/configure --enable-archs=i386,x86_64 \
             --with-wayland --with-vulkan --with-x
-          ./configure
           make -j$(nproc)
           make install DESTDIR="/wine-runner-stage"
       - name: Upload compiled artifact
