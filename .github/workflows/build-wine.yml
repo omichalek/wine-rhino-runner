@@ -2,10 +2,14 @@ name: Patch and build Wine
 
 on:
   push:
-    branches: [ "main" ]
+    #branches: [ "main" ] # trigger the action on each commit
+    tags:
+      - '*rhino*' # trigger the action when tagged with *rhino* 
 jobs:
   build:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
     steps:
       - name: Checkout source, submodules
         uses: actions/checkout@v4
